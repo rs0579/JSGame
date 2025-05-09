@@ -5,10 +5,12 @@ window.addEventListener('load', function () {
     //2D IS A CONTEXT TYPE THAT ALLOWS US TO DRAW 2D SHAPES AND IMAGES.WE THEN SET THE CANVAS SIZE TO THE WINDOW SIZE. WE THEN GET THE 2D CONTEXT OF THE CANVAS, WHICH IS BUILT INTO HTML5. 
     const ctx = canvas.getContext('2d');
 
-    canvas.width = 1280;
-    canvas.height = 720;
+    // canvas.width = 1280;
+    // canvas.height = 720;
+    canvas.width = 1366;
+    canvas.height = 599;
 
-    //THESE ARE DEFINDED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY BE USED ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANT RUN IT - WHICH COULD AFFECT PERFORMANCE.
+    //THESE ARE DEFINED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY LOAD UP ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANTLY RUN THEM - WHICH COULD AFFECT PERFORMANCE.
     ctx.fillStyle = 'white'
     ctx.lineWidth = 5; // THIS SETS THE LINE WIDTH FOR THE STROKE STYLE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
     ctx.strokeStyle = 'white'; // THIS SETS THE STROKE STYLE FOR THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
@@ -56,20 +58,20 @@ window.addEventListener('load', function () {
             }
 
             //USE CANVAS INSTEAD OF WINDOW TO GET THE MOUSE POSITION RELATIVE TO THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE POSITION IS RELATIVE TO THE CANVAS AND NOT THE WINDOW.
-            window.addEventListener('mousedown', (e) => {
+            window.addEventListener('mousedown', e => {
                 this.mouse.x = e.offsetX; // THIS GETS THE X POSITION OF THE MOUSE RELATIVE TO THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE POSITION IS RELATIVE TO THE CANVAS AND NOT THE WINDOW. this is pulled from line 52.
                 this.mouse.y = e.offsetY
 
                 this.mouse.pressed = true; // THIS SETS THE MOUSE PRESSED PROPERTY TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE IS PRESSED WHEN WE CLICK ON THE CANVAS.
             })
 
-            window.addEventListener('mouseup', (e) => {
+            window.addEventListener('mouseup', e => {
                 this.mouse.x = e.offsetX
                 this.mouse.y = e.offsetY
                 this.mouse.pressed = false;
             })
 
-            window.addEventListener('mousemove', (e) => {
+            window.addEventListener('mousemove', e => {
                 this.mouse.x = e.offsetX
                 this.mouse.y = e.offsetY
 
