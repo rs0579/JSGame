@@ -1,0 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* IF I ONLY SET THE SIZES HERE IT WILL ONLY BE THE ELEMETN SIZE AND IT WILL STRETCHT THE IMAGES OUT. */
+/* FOR THAT REASON, YOU HAVE TO SET THE 'DRAWING SURFACE SIZE' IN THE JS FILE. */
+#canvas1 {
+    background-image: url('assets/background.png');
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#overlay{ 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);   
+}
