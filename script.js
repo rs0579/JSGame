@@ -70,7 +70,7 @@ window.addEventListener('load', function () {
             })
 
             window.addEventListener('mousemove', (e) => {
-                this.mouse.x = e.offset
+                this.mouse.x = e.offsetX
                 this.mouse.y = e.offsetY
 
                 console.log(this.mouse.x, this.mouse.y);
