@@ -111,7 +111,7 @@ window.addEventListener('load', function () {
             this.canvas = canvas;
             this.width = this.canvas.width;
             this.height = this.canvas.height;
-            const topMargin = 260 // this is the top area of the canvas that the obstacles will not be able to go into. The amount of pixels are not totally clear, but you should be able to estimate them and test as you go. The base of the obstacles will not enter the space.
+            this.topMargin = 260 // this is the top area of the canvas that the obstacles will not be able to go into. The amount of pixels are not totally clear, but you should be able to estimate them and test as you go. The base of the obstacles will not enter the space.
             this.player = new Player(this); //  THIS CREATES A NEW PLAYER OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
 
             this.numberOfObstacles = 10; // THIS SETS THE NUMBER OF OBSTACLES TO 5. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THERE ARE ENOUGH OBSTACLES TO AVOID.
@@ -175,7 +175,7 @@ window.addEventListener('load', function () {
                     }
                 });
                 const margin = testObstacle.collisionRadius
-                if (!overlap && testObstacle.spriteX > 0 && testObstacle.spriteX < this.width - testObstacle.spriteX && testObstacle.collisionY > 260 && testObstacle.collisionY < this.height) { // THIS CHECKS IF THE OBSTACLE IS NOT OVERLAPPING WITH THE PLAYER OR ANY OTHER OBSTACLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+                if (!overlap && testObstacle.spriteX > 0 && testObstacle.spriteX < this.width - testObstacle.spriteX && testObstacle.collisionY > this.topMargin + margin && testObstacle.collisionY < this.height - margin) { // THIS CHECKS IF THE OBSTACLE IS NOT OVERLAPPING WITH THE PLAYER OR ANY OTHER OBSTACLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
                    // I added the && to the condition to make sure that the obstacles stay within the canvas and are not partially hidden behind the edges - I could have done this in the Obstacle class constructor but because there aren't so many, I can do it here.
                     this.obstacles.push(testObstacle); // THIS ADDS THE OBSTACLE TO THE OBSTACLES ARRAY. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
 
