@@ -12,7 +12,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
-
 #overlay{ 
     position: absolute;
     /* top: 12em;
@@ -20,4 +19,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);   
+}
+#obstacles{
+    display: none;
 }

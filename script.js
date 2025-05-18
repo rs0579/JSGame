@@ -83,9 +83,10 @@ window.addEventListener('load', function () {
             this.game = game;
             this.collisionX = Math.random() * this.game.width;
             this.collisionY = Math.random() * this.game.height;
-            this.collisionradius = 60;
+            this.collisionradius = 100;
+            this.image = document.getElementById('obstacles'); // THIS GETS THE IMAGE ELEMENT FROM THE HTML. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS LOADED BEFORE WE DRAW IT ON THE CANVAS.
         }
-        dranw(context) {
+        draw(context) {
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionradius, 0, Math.PI * 2)
             context.save();
@@ -102,9 +103,9 @@ window.addEventListener('load', function () {
             this.height = this.canvas.height;
             this.player = new Player(this); //  THIS CREATES A NEW PLAYER OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
 
-            this.numberOfObstacles = 5; // THIS SETS THE NUMBER OF OBSTACLES TO 5. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THERE ARE ENOUGH OBSTACLES TO AVOID.
+            this.numberOfObstacles = 10; // THIS SETS THE NUMBER OF OBSTACLES TO 5. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THERE ARE ENOUGH OBSTACLES TO AVOID.
             this.obstacles = []; // THIS CREATES AN EMPTY ARRAY TO STORE THE OBSTACLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN ACCESS THE OBSTACLES LATER.
-            
+
             this.mouse = {
                 x: this.width * 0.5,
                 y: this.height * 0.5,
@@ -140,15 +141,37 @@ window.addEventListener('load', function () {
         render(context) { //this method performs the drawing of the player on the canvas. It takes a context argument, which is the 2D context of the canvas.
             this.player.draw(context);
             this.player.update(); // THIS UPDATES THE PLAYER POSITION. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            this.obstacles.forEach(obstacle =>
+                obstacle.draw(context)); // THIS DRAWS THE OBSTACLES ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE DRAWN ON THE CANVAS.
         }
         init() {
-            for (let i = 0; i < this.numberOfObstacles; i++) {
-                this.obstacles.push(new Obstacle(this)); // THIS CREATES A NEW OBSTACLE OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
+            let attempts = 0;
+            //The below while loop ensures that the obstacles are not overlapping with each other. It does this by checking the distance between each obstacle and the player. If the distance is less than the sum of the radii of the two circles, it means that they are overlapping.
+            //The while loop will keep trying to create a new obstacle until it finds one that is not overlapping with the player or any other obstacles. If it can't find one after 500 attempts, it will stop trying.
+            while (this.obstacles.length < this.numberOfObstacles && attempts < 500) {
+                let testObstacle = new Obstacle(this); // THIS CREATES A NEW OBSTACLE OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
+                let overlap = false;
+                this.obstacles.forEach(obstacle => {
+                    const dx = testObstacle.collisionX - obstacle.collisionX;
+                    const dy = testObstacle.collisionY - obstacle.collisionY;
+                
+                    const distance = Math.hypot(dy, dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
+                const sumOfRadii = testObstacle.collisionradius + obstacle.collisionradius; // THIS CALCULATES THE SUM OF THE RADIUSES OF THE TWO CIRCLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+            if (distance < sumOfRadii) {
+                overlap = true; // THIS SETS THE OVERLAP VARIABLE TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+            }
+            });
+            if (!overlap) {
+                this.obstacles.push(testObstacle); // THIS ADDS THE OBSTACLE TO THE OBSTACLES ARRAY. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+
+            }
+                attempts++;
             }
         }
     }
-        const game = new Game(canvas); // THIS CREATES A NEW GAME OBJECT WHEN THE PAGE LOADS.
-
+    const game = new Game(canvas); // THIS CREATES A NEW GAME OBJECT WHEN THE PAGE LOADS.
+    game.init(); //This fills the obstacles array with new instances of the Obstacle class.
+    console.log(game);
 
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // THIS CLEARS THE CANVAS. If we don't clear the canvas, a trail of white circles will be left behind. It takes all those arguments: the x and y coordinates of the top left corner of the rectangle to clear, and the width and height of the rectangle to clear.
