@@ -83,16 +83,19 @@ window.addEventListener('load', function () {
             this.game = game;
             this.collisionX = Math.random() * this.game.width;
             this.collisionY = Math.random() * this.game.height;
-            this.collisionradius = 100;
+            this.collisionradius = 60;
             this.image = document.getElementById('obstacles'); // THIS GETS THE IMAGE ELEMENT FROM THE HTML. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS LOADED BEFORE WE DRAW IT ON THE CANVAS.
             this.spriteWidth = 250;
             this.spriteHeight = 250; //The above are the height and width of each individual image in the sprite sheet. If you do not know what the specific height and width of the image, you can get the width by dividing the width of the entire image by the number of coloumns (images)(imageWidth/# of columns). And the height is the same but with the number of rows (images)(imageHeight/# of rows).
-            this.width = this.spriteWidth
-            this.height = this.spriteHeight
+            this.width = this.spriteWidth;
+            this.height = this.spriteHeight;
+
+            this.spriteX = this.collisionX - this.width * 0.5; // THIS SETS THE X POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION.
+            this.spriteY = this.collisionY - this.height * 0.5 - 70; // THIS SETS THE Y POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION. The -70 is to make the image sit on the ground. I think this is because the image is 250px tall and the canvas is 720px tall, so we need to move it up by 70px to make it sit on the ground.
         }
         draw(context) {
 
-            context.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.collisionX, this.collisionY, this.width, this.height); // THIS DRAWS THE IMAGE ON THE CANVAS. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
+            context.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); // THIS DRAWS THE IMAGE ON THE CANVAS. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionradius, 0, Math.PI * 2)
             context.save();
@@ -160,17 +163,17 @@ window.addEventListener('load', function () {
                 this.obstacles.forEach(obstacle => {
                     const dx = testObstacle.collisionX - obstacle.collisionX;
                     const dy = testObstacle.collisionY - obstacle.collisionY;
-                
-                    const distance = Math.hypot(dy, dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
-                const sumOfRadii = testObstacle.collisionradius + obstacle.collisionradius; // THIS CALCULATES THE SUM OF THE RADIUSES OF THE TWO CIRCLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
-            if (distance < sumOfRadii) {
-                overlap = true; // THIS SETS THE OVERLAP VARIABLE TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
-            }
-            });
-            if (!overlap) {
-                this.obstacles.push(testObstacle); // THIS ADDS THE OBSTACLE TO THE OBSTACLES ARRAY. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
 
-            }
+                    const distance = Math.hypot(dy, dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
+                    const sumOfRadii = testObstacle.collisionradius + obstacle.collisionradius; // THIS CALCULATES THE SUM OF THE RADIUSES OF THE TWO CIRCLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+                    if (distance < sumOfRadii) {
+                        overlap = true; // THIS SETS THE OVERLAP VARIABLE TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+                    }
+                });
+                if (!overlap) {
+                    this.obstacles.push(testObstacle); // THIS ADDS THE OBSTACLE TO THE OBSTACLES ARRAY. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+
+                }
                 attempts++;
             }
         }
