@@ -85,8 +85,14 @@ window.addEventListener('load', function () {
             this.collisionY = Math.random() * this.game.height;
             this.collisionradius = 100;
             this.image = document.getElementById('obstacles'); // THIS GETS THE IMAGE ELEMENT FROM THE HTML. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS LOADED BEFORE WE DRAW IT ON THE CANVAS.
+            this.spriteWidth = 250;
+            this.spriteHeight = 250; //The above are the height and width of each individual image in the sprite sheet. If you do not know what the specific height and width of the image, you can get the width by dividing the width of the entire image by the number of coloumns (images)(imageWidth/# of columns). And the height is the same but with the number of rows (images)(imageHeight/# of rows).
+            this.width = this.spriteWidth
+            this.height = this.spriteHeight
         }
         draw(context) {
+
+            context.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.collisionX, this.collisionY, this.width, this.height); // THIS DRAWS THE IMAGE ON THE CANVAS. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionradius, 0, Math.PI * 2)
             context.save();
