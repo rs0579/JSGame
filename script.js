@@ -6,7 +6,7 @@ window.addEventListener('load', function () {
     const ctx = canvas.getContext('2d');
 
     canvas.width = 1280;
-    canvas.height = 720;    
+    canvas.height = 720;
     //THE BELOW ARE STYLES THAT I IMPLAMENTED TO MAKE THE CANVAS WIDER. HOWEVER, THIS AFFECTED THE X AND Y MOUSEMOVE COORDINATES. THE CANVAS HAS TO BE THE ABOVE SIZE FOR THE MOUSEMOVE TO WORK PROPERLY. I THINK THIS IS BECAUSE THE CANVAS SIZE AFFECTS THE MOUSE COORDINATES. I THINK THIS IS BECAUSE THE CANVAS SIZE AFFECTS THE MOUSE COORDINATES.
     // canvas.width = 1366;
     // canvas.height = 599;
@@ -25,8 +25,10 @@ window.addEventListener('load', function () {
             this.collisionY = this.game.height * 0.5; // THIS MEANS THAT THE PLAYER WILL START IN THE MIDDLE OF THE CANVAS.
             this.collisionradius = 30;
 
-            this.speedx = 0; // THIS SETS THE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER'S HORIZONTAL SPEED IS CONSTANT.
-            this.speedy = 0; // THIS SETS THE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER'S VERTICLE SPEED IS CONSTANT.
+
+            this.dx = 0; // THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER AND THE MOUSE.
+            this.dy = 0; // THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER AND THE MOUSE.
+            this.speedModifier = 5; // THIS SETS THE SPEED OF THE PLAYER.
 
         }
         //passing context allows us to specify which canvas we want to draw on.
@@ -50,21 +52,49 @@ window.addEventListener('load', function () {
             context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
 
         }
-        update(){
-            this.dx= this.game.mouse.x - this.collisionX; // THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER AND THE MOUSE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            this.dy= this.game.mouse.y - this.collisionY; // THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER AND THE MOUSE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            
+        update() {
+            this.dx = this.game.mouse.x - this.collisionX; // THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONX) AND THE MOUSE (THIS.GAME.MOUSE.X). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE X AXIS (HORIZONTALLY).
+            this.dy = this.game.mouse.y - this.collisionY; // THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONY) AND THE MOUSE (THIS.GAME.MOUSE.Y). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE Y AXIS (VERTICALLY).
+
+            const distance = Math.hypot(this.dy, this.dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
+            if (distance > this.speedModifier) {
+                //I moved the below to a conditional statement because once the player arrives at the mouse press location, it stops but the players vibrates, I do not want it to do this so we need to make it be still here.
+                this.speedx = this.dx / distance || 0; // THIS SETS THE HORIZONTAL SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+                this.speedy = this.dy / distance || 0; // THIS SETS THE VERTICLE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            } else {
+                this.speedx = 0;
+                this.speedy = 0;
+            }
+            //THE BELOW THREE LINES ARE APART OF THE FIRST TECHNIQUE OF MOVEMENT THAT IS NOT NEEDED FOR THIS PARTICULAR GAME, AS THE PLAYER GETS CLOSER TO THE PRESSED COORDINATES, IT SLOWS DOWN. WITH THE ABOVE TECHNIQUE WHICH IS FOLLLOWED UP BY LINES ~66-67, MOTION IS CONSISTANT.
+
             //WHEN YOU DIVIDE BY A NUMBER, YOU'RE DETERMINING HOW FAST THE PLAYER MOVES TOWARDS THE MOUSE. THE SMALLER THE NUMBER, THE FASTER THE PLAYER MOVES. IN GAMES, YOU DON'T WANT THE PLAYER TO MOVE TOO FAST, SO YOU DIVIDE BY A NUMBER THAT'S NOT TOO SMALL. 
-            this.speedx = this.dx/20; // THIS SETS THE HORIZONTAL SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            this.speedy = this.dy/20; // THIS SETS THE VERTICLE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-           
-            this.collisionX += this.speedx * 0.1; // THIS SETS THE X POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            this.collisionY += this.speedy * 0.1; // THIS SETS THE Y POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            // this.speedx = this.dx/20; // THIS SETS THE HORIZONTAL SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            // this.speedy = this.dy/20; // THIS SETS THE VERTICLE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+
+            this.collisionX += this.speedx * this.speedModifier; // THIS SETS THE X POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            this.collisionY += this.speedy * this.speedModifier; // THIS SETS THE Y POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
             // this.collisionX = this.game.mouse.x; // THIS SETS THE X POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
             // this.collisionY = this.game.mouse.y; // THIS SETS THE Y POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
-    }
+        }
     }
 
+    class Obstacle {
+        constructor(game) {
+            this.game = game;
+            this.collisionX = Math.random() * this.game.width;
+            this.collisionY = Math.random() * this.game.height;
+            this.collisionradius = 60;
+        }
+        dranw(context) {
+            context.beginPath();
+            context.arc(this.collisionX, this.collisionY, this.collisionradius, 0, Math.PI * 2)
+            context.save();
+            context.globalAlpha = 0.5;
+            context.fill();
+            context.restore();
+            context.stroke();
+        }
+    }
     class Game {
         constructor(canvas) {
             this.canvas = canvas;
@@ -72,6 +102,9 @@ window.addEventListener('load', function () {
             this.height = this.canvas.height;
             this.player = new Player(this); //  THIS CREATES A NEW PLAYER OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
 
+            this.numberOfObstacles = 5; // THIS SETS THE NUMBER OF OBSTACLES TO 5. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THERE ARE ENOUGH OBSTACLES TO AVOID.
+            this.obstacles = []; // THIS CREATES AN EMPTY ARRAY TO STORE THE OBSTACLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN ACCESS THE OBSTACLES LATER.
+            
             this.mouse = {
                 x: this.width * 0.5,
                 y: this.height * 0.5,
@@ -83,7 +116,7 @@ window.addEventListener('load', function () {
                 this.mouse.x = e.offsetX; // THIS GETS THE X POSITION OF THE MOUSE RELATIVE TO THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE POSITION IS RELATIVE TO THE CANVAS AND NOT THE WINDOW. this is pulled from line 52.
                 this.mouse.y = e.offsetY
 
-                this.mouse.pressed = true; // THIS SETS THE MOUSE PRESSED PROPERTY TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE IS PRESSED WHEN WE CLICK ON THE CANVAS.
+                this.mouse.pressed = true; // THIS SETS THE MOUSE PRESSED PROPERTY TO TRUE. This sets the action for when you press down with the mouse button.
             })
 
             window.addEventListener('mouseup', e => {
@@ -101,8 +134,6 @@ window.addEventListener('load', function () {
 
                 // this.mouse.x = e.offsetX
                 // this.mouse.y = e.offsetY
-
-                console.log(this.mouse.x, this.mouse.y);
             })
         }
 
@@ -110,8 +141,13 @@ window.addEventListener('load', function () {
             this.player.draw(context);
             this.player.update(); // THIS UPDATES THE PLAYER POSITION. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
         }
+        init() {
+            for (let i = 0; i < this.numberOfObstacles; i++) {
+                this.obstacles.push(new Obstacle(this)); // THIS CREATES A NEW OBSTACLE OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
+            }
+        }
     }
-    const game = new Game(canvas); // THIS CREATES A NEW GAME OBJECT WHEN THE PAGE LOADS.
+        const game = new Game(canvas); // THIS CREATES A NEW GAME OBJECT WHEN THE PAGE LOADS.
 
 
     function animate() {
