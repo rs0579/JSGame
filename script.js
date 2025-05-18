@@ -5,10 +5,11 @@ window.addEventListener('load', function () {
     //2D IS A CONTEXT TYPE THAT ALLOWS US TO DRAW 2D SHAPES AND IMAGES.WE THEN SET THE CANVAS SIZE TO THE WINDOW SIZE. WE THEN GET THE 2D CONTEXT OF THE CANVAS, WHICH IS BUILT INTO HTML5. 
     const ctx = canvas.getContext('2d');
 
-    // canvas.width = 1280;
-    // canvas.height = 720;
-    canvas.width = 1366;
-    canvas.height = 599;
+    canvas.width = 1280;
+    canvas.height = 720;    
+    //THE BELOW ARE STYLES THAT I IMPLAMENTED TO MAKE THE CANVAS WIDER. HOWEVER, THIS AFFECTED THE X AND Y MOUSEMOVE COORDINATES. THE CANVAS HAS TO BE THE ABOVE SIZE FOR THE MOUSEMOVE TO WORK PROPERLY. I THINK THIS IS BECAUSE THE CANVAS SIZE AFFECTS THE MOUSE COORDINATES. I THINK THIS IS BECAUSE THE CANVAS SIZE AFFECTS THE MOUSE COORDINATES.
+    // canvas.width = 1366;
+    // canvas.height = 599;
 
     //THESE ARE DEFINED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY LOAD UP ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANTLY RUN THEM - WHICH COULD AFFECT PERFORMANCE.
     ctx.fillStyle = 'white'
@@ -21,8 +22,11 @@ window.addEventListener('load', function () {
             this.game = game;
             //IN GAMING X AND Y CORDINATES ARE USUALLY MEASURED FROM THE TOP LEFT CORNER OF THE CANVAS. THIS MEANS THAT THE X COORDINATE INCREASES AS YOU MOVE TO THE RIGHT AND THE Y COORDINATE INCREASES AS YOU MOVE DOWN. THEY ARE NECESSARY BECAUSE THIS IS THE PLAYERS POSITION ON THE CANVAS.
             this.collisionX = this.game.width * 0.5; // THIS MEANS THAT THE PLAYER WILL START IN THE MIDDLE OF THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO START IN THE MIDDLE OF THE SCREEN ( * 0.5) but we can change the starting postion by changing the number you multiply by.
-            this.collisionY = this.game.height * 0.5; // THIS MEANS THAT THE PLAYER WILL START IN THE MIDDLE OF THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO START IN THE MIDDLE OF THE SCREEN.
+            this.collisionY = this.game.height * 0.5; // THIS MEANS THAT THE PLAYER WILL START IN THE MIDDLE OF THE CANVAS.
             this.collisionradius = 30;
+
+            this.speedx = 0; // THIS SETS THE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER'S HORIZONTAL SPEED IS CONSTANT.
+            this.speedy = 0; // THIS SETS THE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER'S VERTICLE SPEED IS CONSTANT.
 
         }
         //passing context allows us to specify which canvas we want to draw on.
@@ -40,8 +44,25 @@ window.addEventListener('load', function () {
 
             context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
 
+            context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
+            context.moveTo(this.collisionX, this.collisionY); // THIS MOVES THE CURRENT POINT TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            context.lineTo(this.game.mouse.x, this.game.mouse.y); // THIS DRAWS A LINE TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
 
         }
+        update(){
+            this.dx= this.game.mouse.x - this.collisionX; // THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER AND THE MOUSE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            this.dy= this.game.mouse.y - this.collisionY; // THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER AND THE MOUSE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            
+            //WHEN YOU DIVIDE BY A NUMBER, YOU'RE DETERMINING HOW FAST THE PLAYER MOVES TOWARDS THE MOUSE. THE SMALLER THE NUMBER, THE FASTER THE PLAYER MOVES. IN GAMES, YOU DON'T WANT THE PLAYER TO MOVE TOO FAST, SO YOU DIVIDE BY A NUMBER THAT'S NOT TOO SMALL. 
+            this.speedx = this.dx/20; // THIS SETS THE HORIZONTAL SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            this.speedy = this.dy/20; // THIS SETS THE VERTICLE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+           
+            this.collisionX += this.speedx * 0.1; // THIS SETS THE X POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            this.collisionY += this.speedy * 0.1; // THIS SETS THE Y POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+            // this.collisionX = this.game.mouse.x; // THIS SETS THE X POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
+            // this.collisionY = this.game.mouse.y; // THIS SETS THE Y POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
+    }
     }
 
     class Game {
@@ -72,8 +93,14 @@ window.addEventListener('load', function () {
             })
 
             window.addEventListener('mousemove', e => {
-                this.mouse.x = e.offsetX
-                this.mouse.y = e.offsetY
+                //THE BELOW CONDITIONAL STATEMENT ENSURES THAT WHERE WE PRESS, THE PLAYER WILL FOLLOW. BEFORE, WHEREEVER WE MOVED THE MOUSE, THE PLAYER WOULD FOLLOW. NOW YOU HAVE TO PRESS WHERE YOU WANT IT TO GO.
+                if (this.mouse.pressed) {
+                    this.mouse.x = e.offsetX
+                    this.mouse.y = e.offsetY
+                }
+
+                // this.mouse.x = e.offsetX
+                // this.mouse.y = e.offsetY
 
                 console.log(this.mouse.x, this.mouse.y);
             })
@@ -81,15 +108,19 @@ window.addEventListener('load', function () {
 
         render(context) { //this method performs the drawing of the player on the canvas. It takes a context argument, which is the 2D context of the canvas.
             this.player.draw(context);
+            this.player.update(); // THIS UPDATES THE PLAYER POSITION. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
         }
     }
     const game = new Game(canvas); // THIS CREATES A NEW GAME OBJECT WHEN THE PAGE LOADS.
-    game.render(ctx); // THIS CALLS THE RENDER METHOD OF THE GAME OBJECT, WHICH DRAWS THE PLAYER ON THE CANVAS.
-    console.log(game);
 
 
     function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // THIS CLEARS THE CANVAS. If we don't clear the canvas, a trail of white circles will be left behind. It takes all those arguments: the x and y coordinates of the top left corner of the rectangle to clear, and the width and height of the rectangle to clear.
+        //IF WE WANT TO SEE MOVEMENT, WE HAVE TO CALL REDER OVER AND OVER AGAIN. THIS IS DONE BY CALLING THE ANIMATE FUNCTION RECURSIVELY.
+        game.render(ctx); // THIS CALLS THE RENDER METHOD OF THE GAME OBJECT, WHICH DRAWS THE PLAYER ON THE CANVAS.
+        requestAnimationFrame(animate); // THIS CALLS THE ANIMATE FUNCTION AGAIN. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE ANIMATION CONTINUES TO RUN.
 
     }
+    animate(); // THIS CALLS THE ANIMATE FUNCTION FOR THE FIRST TIME. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE ANIMATION STARTS RUNNING.
 
 });
