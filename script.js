@@ -165,7 +165,8 @@ window.addEventListener('load', function () {
                     const dy = testObstacle.collisionY - obstacle.collisionY;
 
                     const distance = Math.hypot(dy, dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
-                    const sumOfRadii = testObstacle.collisionradius + obstacle.collisionradius; // THIS CALCULATES THE SUM OF THE RADIUSES OF THE TWO CIRCLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
+                    const distanceBuffer = 100; 
+                    const sumOfRadii = testObstacle.collisionradius + obstacle.collisionradius + distanceBuffer; // THIS CALCULATES THE SUM OF THE RADIUSES OF THE TWO CIRCLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
                     if (distance < sumOfRadii) {
                         overlap = true; // THIS SETS THE OVERLAP VARIABLE TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
                     }
