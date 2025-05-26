@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
     // canvas.width = 1366;
     // canvas.height = 599;
 
-       //These are the player's styles. THEY ARE DEFINED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY LOAD UP ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANTLY RUN THEM - WHICH COULD AFFECT PERFORMANCE.
+    //These are the player's styles. THEY ARE DEFINED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY LOAD UP ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANTLY RUN THEM - WHICH COULD AFFECT PERFORMANCE.
     ctx.fillStyle = 'white'
     ctx.lineWidth = 5; // THIS SETS THE LINE WIDTH FOR THE STROKE STYLE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
     ctx.strokeStyle = 'white'; // THIS SETS THE STROKE STYLE FOR THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
@@ -75,9 +75,14 @@ window.addEventListener('load', function () {
             this.collisionY += this.speedy * this.speedModifier; // THIS SETS THE Y POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
             // this.collisionX = this.game.mouse.x; // THIS SETS THE X POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
             // this.collisionY = this.game.mouse.y; // THIS SETS THE Y POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
-            
+
             this.game.obstacles.forEach(obstacle => { //forEah allows us to check out player and obstacles spatial relationship to each other.
-                
+                if (this.game.checkCollision(this, obstacle)) {
+                    console.log('collision detected');
+                    // [(distance < sumOfRadii), distance, sumOfRadii, dx, dy]; 
+
+                }
+
             })
         }
     }
@@ -90,20 +95,20 @@ window.addEventListener('load', function () {
             this.collisionRadius = 60;
             this.image = document.getElementById('obstacles'); // THIS GETS THE IMAGE ELEMENT FROM THE HTML. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS LOADED BEFORE WE DRAW IT ON THE CANVAS.
             this.spriteWidth = 250;
-            this.spriteHeight = 250; 
+            this.spriteHeight = 250;
             //The above are the height and width of each individual image in the sprite sheet. If you do not know what the specific height and width of the image, you can get the width by dividing the width of the entire image by the number of coloumns (images)(imageWidth/# of columns). And the height is the same but with the number of rows (images)(imageHeight/# of rows).
             this.width = this.spriteWidth;
             this.height = this.spriteHeight;
 
             this.spriteX = this.collisionX - this.width * 0.5; // THIS SETS THE X POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION.
             this.spriteY = this.collisionY - this.height * 0.5 - 70; // THIS SETS THE Y POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION. The -70 is to make the bubble the player will have to walk around lower on the obstacle image.
-            
+
             this.frameX = Math.floor(Math.random() * 4) // This randomly sets the X position of the image in the sprite sheet FOR the context.drawImage method. Multiplying by 4 because there are 5 images in the sprite sheet (0-4). Math.floor, which rounds down to the nearest whole number keeps us on the sheet.
             this.frameY = Math.floor(Math.random() * 3); // Please refer to the above. 
         }
         draw(context) {
 
-            context.drawImage(this.image,this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); // This is a built-in method that draws the image on the canvas. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image and they all are the excised image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
+            context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); // This is a built-in method that draws the image on the canvas. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image and they all are the excised image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
             // The above: When you multiply argument 2 by the spriteWidth, you are specifying which image in the sprite sheet you want to draw moving across. In this case, it is the second image in the sprite sheet (index 1). If you want to draw a different image, you can change the number before the * to the index of the image you want to draw. And the same for the 3rd argument, which when multiplied by the spriteHeight, specifies which row of images you want to draw (up and down). In this case, it is the first row (index 0). If you want to draw a different row, you can change the number before the * to the index of the row you want to draw.
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)
@@ -158,17 +163,17 @@ window.addEventListener('load', function () {
         }
 
         render(context) { //this method performs the drawing of the player on the canvas. It takes a context argument, which is the 2D context of the canvas.
+            this.obstacles.forEach(obstacle => obstacle.draw(context)); // THIS DRAWS THE OBSTACLES ON THE CANVAS. Originally, I had this underneath the player.draw method, but I moved it here so that the obstacles are drawn first, and then the player is drawn on top of them. This way, the player will always be on top of the obstacles.
             this.player.draw(context);
             this.player.update(); // THIS UPDATES THE PLAYER POSITION. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            this.obstacles.forEach(obstacle =>
-                obstacle.draw(context)); // THIS DRAWS THE OBSTACLES ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE DRAWN ON THE CANVAS.
         }
-        checkCollision(a, b){ //This method will check if two objects are touching 
+        checkCollision(a, b) { //This method will check if two objects are touching 
             const dx = a.collisionX - b.collisionX; //The distance between the center point of bubble a and bubble b on the x-axis.
             const dy = a.collisionY - b.collisionY; //The distance between the center point of bubble a and bubble b on the y-axis.
             const distance = Math.hypot(dy, dx);
             const sumOfRadii = a.collisionRadius + b.collisionRadius;//To determine if the two bubbles are touching, we need to add the radii of both bubbles together. If the distance between the two bubbles is LESS THAN the sum of their radii, then they are overlapping.
-            return (distance < sumOfRadii); //This returns true if the two bubbles are overlapping, and false if they are not. This is important because we want to make sure that the player does not overlap with any obstacles - I could have used an if statement, but I wanted to return a boolean value that could be used in other parts of the code.
+            return [(distance < sumOfRadii), distance, sumOfRadii, dx, dy]; //This returns true if the two bubbles are overlapping, and false if they are not. This is important because we want to make sure that the player does not overlap with any obstacles - I could have used an if statement, but I wanted to return a boolean value that could be used in other parts of the code.
+            //The return above I transformed into the an array with distance, sumOfRadii, dx, and dy so that it would return more than just true or false as it did originally. By doing this, I can use it in Player class to calculate collision resolution vector. REMEMBER THE ORDER OF THE VALUES AND THEIR INDECES: [0] = true/false, [1] = distance, [2] = sumOfRadii, [3] = dx, [4] = dy.
         }
         init() {
             let attempts = 0;
@@ -191,7 +196,7 @@ window.addEventListener('load', function () {
                 });
                 const margin = testObstacle.collisionRadius
                 if (!overlap && testObstacle.spriteX > 0 && testObstacle.spriteX < this.width - testObstacle.spriteX && testObstacle.collisionY > this.topMargin + margin && testObstacle.collisionY < this.height - margin) { // THIS CHECKS IF THE OBSTACLE IS NOT OVERLAPPING WITH THE PLAYER OR ANY OTHER OBSTACLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
-                   // I added the && to the condition to make sure that the obstacles stay within the canvas and are not partially hidden behind the edges - I could have done this in the Obstacle class constructor but because there aren't so many, I can do it here.
+                    // I added the && to the condition to make sure that the obstacles stay within the canvas and are not partially hidden behind the edges - I could have done this in the Obstacle class constructor but because there aren't so many, I can do it here.
                     this.obstacles.push(testObstacle); // THIS ADDS THE OBSTACLE TO THE OBSTACLES ARRAY. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
 
                 }
