@@ -75,6 +75,10 @@ window.addEventListener('load', function () {
             this.collisionY += this.speedy * this.speedModifier; // THIS SETS THE Y POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
             // this.collisionX = this.game.mouse.x; // THIS SETS THE X POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
             // this.collisionY = this.game.mouse.y; // THIS SETS THE Y POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
+            
+            this.game.obstacles.forEach(obstacle => { //forEah allows us to check out player and obstacles spatial relationship to each other.
+                
+            })
         }
     }
 
@@ -158,6 +162,13 @@ window.addEventListener('load', function () {
             this.player.update(); // THIS UPDATES THE PLAYER POSITION. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
             this.obstacles.forEach(obstacle =>
                 obstacle.draw(context)); // THIS DRAWS THE OBSTACLES ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE DRAWN ON THE CANVAS.
+        }
+        checkCollision(a, b){ //This method will check if two objects are touching 
+            const dx = a.collisionX - b.collisionX; //The distance between the center point of bubble a and bubble b on the x-axis.
+            const dy = a.collisionY - b.collisionY; //The distance between the center point of bubble a and bubble b on the y-axis.
+            const distance = Math.hypot(dy, dx);
+            const sumOfRadii = a.collisionRadius + b.collisionRadius;//To determine if the two bubbles are touching, we need to add the radii of both bubbles together. If the distance between the two bubbles is LESS THAN the sum of their radii, then they are overlapping.
+            return (distance < sumOfRadii); //This returns true if the two bubbles are overlapping, and false if they are not. This is important because we want to make sure that the player does not overlap with any obstacles - I could have used an if statement, but I wanted to return a boolean value that could be used in other parts of the code.
         }
         init() {
             let attempts = 0;
