@@ -3,7 +3,7 @@ window.addEventListener('load', function () {
     //WE FIRST MUST POINT JS TO THE CANVAS ELEMENT
     const canvas = document.getElementById('canvas1');
     //2D IS A CONTEXT TYPE THAT ALLOWS US TO DRAW 2D SHAPES AND IMAGES.WE THEN SET THE CANVAS SIZE TO THE WINDOW SIZE. WE THEN GET THE 2D CONTEXT OF THE CANVAS, WHICH IS BUILT INTO HTML5. 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d'); //ctx is the player
 
     canvas.width = 1280;
     canvas.height = 720;
@@ -11,7 +11,7 @@ window.addEventListener('load', function () {
     // canvas.width = 1366;
     // canvas.height = 599;
 
-    //THESE ARE DEFINED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY LOAD UP ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANTLY RUN THEM - WHICH COULD AFFECT PERFORMANCE.
+       //These are the player's styles. THEY ARE DEFINED IN THE GLOBALE SCOPE BECAUSE THEY WILL ONLY LOAD UP ONCE ON PAGE LOAD. THIS APPLIES THE STYLES BUT DOESN'T CONSTANTLY RUN THEM - WHICH COULD AFFECT PERFORMANCE.
     ctx.fillStyle = 'white'
     ctx.lineWidth = 5; // THIS SETS THE LINE WIDTH FOR THE STROKE STYLE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
     ctx.strokeStyle = 'white'; // THIS SETS THE STROKE STYLE FOR THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
@@ -21,18 +21,18 @@ window.addEventListener('load', function () {
         constructor(game) {
             this.game = game;
             //IN GAMING X AND Y CORDINATES ARE USUALLY MEASURED FROM THE TOP LEFT CORNER OF THE CANVAS. THIS MEANS THAT THE X COORDINATE INCREASES AS YOU MOVE TO THE RIGHT AND THE Y COORDINATE INCREASES AS YOU MOVE DOWN. THEY ARE NECESSARY BECAUSE THIS IS THE PLAYERS POSITION ON THE CANVAS.
-            this.collisionX = this.game.width * 0.5; // THIS MEANS THAT THE PLAYER WILL START IN THE MIDDLE OF THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO START IN THE MIDDLE OF THE SCREEN ( * 0.5) but we can change the starting postion by changing the number you multiply by.
-            this.collisionY = this.game.height * 0.5; // THIS MEANS THAT THE PLAYER WILL START IN THE MIDDLE OF THE CANVAS.
-            this.collisionRadius = 30;
+            this.collisionX = this.game.width * 0.5; // CollisionX and CollisionY are the player's position. Where the players is located are these variables
+            this.collisionY = this.game.height * 0.5; // // By setting these to 0.5, we ensure that the player starts in the middle of the canvas.
+            this.collisionRadius = 30; // Without the rasdius, the player does not appear on the the canvas. The collision radius defines the size of the player.
 
 
-            this.dx = 0; // THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER AND THE MOUSE.
-            this.dy = 0; // THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER AND THE MOUSE.
+            this.dx = 0; // Horizontal (straight across) distance between the player in the mouse. Given value of 0 as a default. Changed later in the update method.
+            this.dy = 0; // Vertical (straight up and down) distance between the player in the mouse. Given value of 0 as a default. Changed later in the update method.
             this.speedModifier = 5; // THIS SETS THE SPEED OF THE PLAYER.
 
         }
         //passing context allows us to specify which canvas we want to draw on.
-        draw(context) {//firrst you will draw a circle to represent the player.
+        draw(context) {//first you will draw a circle to represent the player.
 
             context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)//this takes at least 5 arguments: X & Y coordinates, radius, start & end angles (in radians measured from the positive x-axis).
@@ -53,14 +53,14 @@ window.addEventListener('load', function () {
 
         }
         update() {
-            this.dx = this.game.mouse.x - this.collisionX; // THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONX) AND THE MOUSE (THIS.GAME.MOUSE.X). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE X AXIS (HORIZONTALLY).
-            this.dy = this.game.mouse.y - this.collisionY; // THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONY) AND THE MOUSE (THIS.GAME.MOUSE.Y). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE Y AXIS (VERTICALLY).
+            this.dx = this.game.mouse.x - this.collisionX; // dx is the distance between the player and the mouse in a straight line across (horizontally). THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONX) AND THE MOUSE (THIS.GAME.MOUSE.X). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE X AXIS (HORIZONTALLY).
+            this.dy = this.game.mouse.y - this.collisionY; // dy is the distance between the player and the mouse up and down (veritically). THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONY) AND THE MOUSE (THIS.GAME.MOUSE.Y). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE Y AXIS (VERTICALLY).
 
             const distance = Math.hypot(this.dy, this.dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
             if (distance > this.speedModifier) {
                 //I moved the below to a conditional statement because once the player arrives at the mouse press location, it stops but the players vibrates, I do not want it to do this so we need to make it be still here.
-                this.speedx = this.dx / distance || 0; // THIS SETS THE HORIZONTAL SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-                this.speedy = this.dy / distance || 0; // THIS SETS THE VERTICLE SPEED OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+                this.speedx = this.dx / distance || 0; // Horizontal speed is the ratio between the horizontal distance (straight across) and the actually distance, AKA the hypotenuse. The || 0 is just in case these values are undefined it will go to 0.
+                this.speedy = this.dy / distance || 0; // Vertical speed is the ratio between the vertical distance (up and down) and the actually distance, AKA the hypotenuse. The || 0 is just in case these values are undefined it will go to 0.
             } else {
                 this.speedx = 0;
                 this.speedy = 0;
@@ -80,8 +80,8 @@ window.addEventListener('load', function () {
 
     class Obstacle {
         constructor(game) {
-            this.game = game;
-            this.collisionX = Math.random() * this.game.width;
+            this.game = game; //This allows use access the game properties like width and height.
+            this.collisionX = Math.random() * this.game.width; // Like the collisionX and collisionY in the Player class, this positions the obstacle on the canvas. Unlike the Player class, I want them to be randomly placed so I used the math.random() method and not the *0.5.
             this.collisionY = Math.random() * this.game.height;
             this.collisionRadius = 60;
             this.image = document.getElementById('obstacles'); // THIS GETS THE IMAGE ELEMENT FROM THE HTML. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS LOADED BEFORE WE DRAW IT ON THE CANVAS.
@@ -92,11 +92,15 @@ window.addEventListener('load', function () {
             this.height = this.spriteHeight;
 
             this.spriteX = this.collisionX - this.width * 0.5; // THIS SETS THE X POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION.
-            this.spriteY = this.collisionY - this.height * 0.5 - 70; // THIS SETS THE Y POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION. The -70 is to make the image sit on the ground. I think this is because the image is 250px tall and the canvas is 720px tall, so we need to move it up by 70px to make it sit on the ground.
+            this.spriteY = this.collisionY - this.height * 0.5 - 70; // THIS SETS THE Y POSITION OF THE IMAGE ON THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE IMAGE IS DRAWN IN THE CORRECT POSITION. The -70 is to make the bubble the player will have to walk around lower on the obstacle image.
+            
+            this.frameX = Math.floor(Math.random() * 4) // This randomly sets the X position of the image in the sprite sheet FOR the context.drawImage method. Multiplying by 4 because there are 5 images in the sprite sheet (0-4). Math.floor, which rounds down to the nearest whole number keeps us on the sheet.
+            this.frameY = Math.floor(Math.random() * 3); // Please refer to the above. 
         }
         draw(context) {
 
-            context.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); // THIS DRAWS THE IMAGE ON THE CANVAS. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
+            context.drawImage(this.image,this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); // This is a built-in method that draws the image on the canvas. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image and they all are the excised image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
+            // The above: When you multiply argument 2 by the spriteWidth, you are specifying which image in the sprite sheet you want to draw moving across. In this case, it is the second image in the sprite sheet (index 1). If you want to draw a different image, you can change the number before the * to the index of the image you want to draw. And the same for the 3rd argument, which when multiplied by the spriteHeight, specifies which row of images you want to draw (up and down). In this case, it is the first row (index 0). If you want to draw a different row, you can change the number before the * to the index of the row you want to draw.
             context.beginPath();
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)
             context.save();
@@ -115,7 +119,7 @@ window.addEventListener('load', function () {
             this.player = new Player(this); //  THIS CREATES A NEW PLAYER OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
 
             this.numberOfObstacles = 10; // THIS SETS THE NUMBER OF OBSTACLES TO 5. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THERE ARE ENOUGH OBSTACLES TO AVOID.
-            this.obstacles = []; // THIS CREATES AN EMPTY ARRAY TO STORE THE OBSTACLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN ACCESS THE OBSTACLES LATER.
+            this.obstacles = []; // This is an array that will hold all obstacle objects. It starts off empty because we will fill it with new instances of the Obstacle class when we call the init method.
 
             this.mouse = {
                 x: this.width * 0.5,
@@ -124,14 +128,14 @@ window.addEventListener('load', function () {
             }
 
             //USE CANVAS INSTEAD OF WINDOW TO GET THE MOUSE POSITION RELATIVE TO THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE POSITION IS RELATIVE TO THE CANVAS AND NOT THE WINDOW.
-            window.addEventListener('mousedown', e => {
-                this.mouse.x = e.offsetX; // THIS GETS THE X POSITION OF THE MOUSE RELATIVE TO THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE POSITION IS RELATIVE TO THE CANVAS AND NOT THE WINDOW. this is pulled from line 52.
+            window.addEventListener('mousedown', e => { //if I set this to canvas, the Player will not follow the mouse. This is because the canvas is not the same size as the window, so the mouse position will not be relative to the canvas.
+                this.mouse.x = e.offsetX; // THIS GETS THE X POSITION OF THE MOUSE RELATIVE TO THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE MOUSE POSITION IS RELATIVE TO THE CANVAS AND NOT THE WINDOW. this is pulled from line 52. offSet x is an event property that is produced automatically when the mouse is pressed down in the browser window.
                 this.mouse.y = e.offsetY
 
-                this.mouse.pressed = true; // THIS SETS THE MOUSE PRESSED PROPERTY TO TRUE. This sets the action for when you press down with the mouse button.
+                this.mouse.pressed = true; // When the mouse is down, ofc pressed is true. 
             })
 
-            window.addEventListener('mouseup', e => {
+            window.addEventListener('mouseup', e => { //if I set this to canvas, the Player will not follow the mouse. This is because the canvas is not the same size as the window, so the mouse position will not be relative to the canvas.
                 this.mouse.x = e.offsetX
                 this.mouse.y = e.offsetY
                 this.mouse.pressed = false;
@@ -157,7 +161,7 @@ window.addEventListener('load', function () {
         }
         init() {
             let attempts = 0;
-            //The below while loop ensures that the obstacles are not overlapping with each other. It does this by checking the distance between each obstacle and the player. If the distance is less than the sum of the radii of the two circles, it means that they are overlapping.
+            //The below while loop ensures that the obstacles are not overlapping with each other. It does this by checking the distance between each obstacle and the player. If the distance is less than the sum of the radii of the two circles, it means that they are overlapping. If they the sum is equal it means they are touching but not overlapping. If they are overlapping, it will try to create a new obstacle until it finds one that is not overlapping with the player or any other obstacles.
             //The while loop will keep trying to create a new obstacle until it finds one that is not overlapping with the player or any other obstacles. If it can't find one after 500 attempts, it will stop trying.
             while (this.obstacles.length < this.numberOfObstacles && attempts < 500) {
                 let testObstacle = new Obstacle(this); // THIS CREATES A NEW OBSTACLE OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
@@ -168,7 +172,7 @@ window.addEventListener('load', function () {
 
                     const distance = Math.hypot(dy, dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
                     // The below puts distance between the obstacles by 100px. I then added that new variable to ny sumofRadii variable. It is by putting it there that I added the space.
-                    const distanceBuffer = 100; 
+                    const distanceBuffer = 100; //Adds more space between the obstacles in addition to the collision radius bubble that was accounted for in the while loop above.
                     const sumOfRadii = testObstacle.collisionRadius + obstacle.collisionRadius + distanceBuffer; // THIS CALCULATES THE SUM OF THE RADIUSES OF THE TWO CIRCLES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
                     if (distance < sumOfRadii) {
                         overlap = true; // THIS SETS THE OVERLAP VARIABLE TO TRUE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE OBSTACLES ARE NOT OVERLAPPING.
