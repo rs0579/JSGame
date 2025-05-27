@@ -157,6 +157,8 @@ window.addEventListener('load', function () {
             this.topMargin = 260 // this is the top area of the canvas that the obstacles will not be able to go into. The amount of pixels are not totally clear, but you should be able to estimate them and test as you go. The base of the obstacles will not enter the space.
             this.player = new Player(this); //  THIS CREATES A NEW PLAYER OBJECT WHEN WE CREATE AN INSTANCE OF THE GAME CLASS. BY STRUCTURING IT LIKE THIS (INCLUNDING WITH THE THIS KEYWORD PASSED AS AN ARGUMENT), WE ENSURE THAT THE PLAYER LOADS WHEN THE GAME LOADS.
 
+            this.debug = true;
+
             this.numberOfObstacles = 10; // THIS SETS THE NUMBER OF OBSTACLES TO 5. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THERE ARE ENOUGH OBSTACLES TO AVOID.
             this.obstacles = []; // This is an array that will hold all obstacle objects. It starts off empty because we will fill it with new instances of the Obstacle class when we call the init method.
 
@@ -189,6 +191,12 @@ window.addEventListener('load', function () {
 
                 // this.mouse.x = e.offsetX
                 // this.mouse.y = e.offsetY
+            })
+            window.addEventListener('keydown', e => { //if I set this to canvas, the Player will not follow the mouse. This is because the canvas is not the same size as the window, so the mouse position will not be relative to the canvas.
+                if (e.key === 'd') {
+                    this.debug = !this.debug; // THIS TOGGLE THE DEBUG MODE ON AND OFF. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN SEE THE COLLISION BUBBLES AND OTHER DEBUG INFORMATION.
+                console.log(this.debug);
+                }
             })
         }
 
