@@ -25,7 +25,8 @@ window.addEventListener('load', function () {
             this.collisionY = this.game.height * 0.5; // By setting these to 0.5, we ensure that the player starts in the middle of the canvas.
             this.collisionRadius = 30; // Without the radius, the player does not appear on the the canvas. The collision radius defines the size of the player.
 
-
+            this.speedX = 0;
+            this.speedY = 0;
             this.dx = 0; // Horizontal (straight across) distance between the player in the mouse. Given value of 0 as a default. Changed later in the update method.
             this.dy = 0; // Vertical (straight up and down) distance between the player in the mouse. Given value of 0 as a default. Changed later in the update method.
             this.speedModifier = 5; // THIS SETS THE SPEED OF THE PLAYER.
@@ -38,12 +39,15 @@ window.addEventListener('load', function () {
             //The bottom two lines are the top left corner of the image on the canvas, not the bubble. The collisionX and collisionY are the center point of the player, so we subtract half of the width and height to get the top left corner of the image. You can define these here or in the update method.
             this.spriteX;
             this.spriteY;
+
+            this.frameX = 0; // Refer to Obstacle class for explanation of frameX and frameY.
+            this.frameY = 0;
             this.image = document.getElementById('bull');
 
         }
         //passing context allows us to specify which canvas we want to draw on.
         draw(context) {//first you will draw a circle to represent the player.
-            context.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); //Used spriteX and spriteY instead of collision because I want bull image to go over my bubble. 
+            context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); //Used spriteX and spriteY instead of collision because I want bull image to go over my bubble. 
             context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)//this takes at least 5 arguments: X & Y coordinates, radius, start & end angles (in radians measured from the positive x-axis).
 
@@ -65,6 +69,18 @@ window.addEventListener('load', function () {
         update() {
             this.dx = this.game.mouse.x - this.collisionX; // dx is the distance between the player and the mouse in a straight line across (horizontally). THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONX) AND THE MOUSE (THIS.GAME.MOUSE.X). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE X AXIS (HORIZONTALLY).
             this.dy = this.game.mouse.y - this.collisionY; // dy is the distance between the player and the mouse up and down (veritically). THIS SETS THE VERTICLE DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONY) AND THE MOUSE (THIS.GAME.MOUSE.Y). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE Y AXIS (VERTICALLY).
+
+            //Sprite Animations
+            const angle = Math.atan2(this.dy, this.dx); //Math.atan2() is a built-in method. It returns the angle in radians between the positive x-axis and the line to the point (dx, dy). This is used to determine the direction the player is facing. The angle is calculated using the horizontal distance (dx) and vertical distance (dy) between the player and the mouse. Based on this I will choose which image to draw dynamically. ** This is quite tricky because you have to keep in mind that it is measured in radians, which are not like degrees. Radians are a unit of angle measurement where 2π radians is equal to 360 degrees. So, if you want to convert radians to degrees, you can multiply by 180/π.** You can use the console.log to find these measurements and calculate the angle you need yourself.
+            if (angle < -2.74 || angle > 2.74) this.frameY = 6;
+            else if (angle < -1.96) this.frameY = 7;
+            else if (angle < -1.17) this.frameY = 0;
+            else if (angle < -0.39) this.frameY = 1;
+            else if (angle < 0.39) this.frameY = 2;
+            else if (angle < 1.17) this.frameY = 3;
+            else if (angle < 1.96) this.frameY = 4;
+            else if (angle < 2.74) this.frameY = 5;// The frameY value determines the position on the sprite sheet. Please refer to the obstacle class for more information on the sprite sheet.  
+
 
             const distance = Math.hypot(this.dy, this.dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
             if (distance > this.speedModifier) {
