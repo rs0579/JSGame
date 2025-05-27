@@ -77,12 +77,14 @@ window.addEventListener('load', function () {
             // this.collisionY = this.game.mouse.y; // THIS SETS THE Y POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
 
             this.game.obstacles.forEach(obstacle => { //forEah allows us to check out player and obstacles spatial relationship to each other.
-                if (this.game.checkCollision(this, obstacle)) {
-                    console.log('collision detected');
-                    // [(distance < sumOfRadii), distance, sumOfRadii, dx, dy]; 
+                let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, obstacle); // This is saying: Create 5 variables and pairs them with the values that sit at the specific indices in the array returned by checkCollision method.  
+                if (collision){
+                    const unit_x = dx/distance; // This is a vector, small line between 0 and 1px, that points in the direction the player will be pushed. This ensures that the player is pushed away from the obstacle in the direction of the obstacle. This will always be a value between 0 and 1, so it will not push the player too far away from the obstacle.
+                    const unit_y = dy/distance; // Please refer to the above. 
 
+                    this.collisionX = obstacle.collisionX + (sumOfRadii + 1) * unit_x; //This pushes it outside of the obstacle's radius/center point (bubble). obstacle.collisionX is the center point of the obstacle, so we add the sum of the radii to it to push the player outside of the obstacle's radius. The +1 is to ensure that the player is not touching the obstacle. * unit_x gives it the correct direction to push the player away. 
+                    this.collisionY = obstacle.collisionY + (sumOfRadii + 1) * unit_y; //Please refer to the above.
                 }
-
             })
         }
     }
