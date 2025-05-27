@@ -15,7 +15,6 @@ window.addEventListener('load', function () {
     ctx.fillStyle = 'white'
     ctx.lineWidth = 5; // THIS SETS THE LINE WIDTH FOR THE STROKE STYLE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
     ctx.strokeStyle = 'white'; // THIS SETS THE STROKE STYLE FOR THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE LINES ARE THICK ENOUGH TO SEE.
-
     class Player {
         //BY PASSING IN THE GAME OBJECT, WE CAN ACCESS THE GAME OBJECT AND ITS PROPERTIES. THIS IS IMPORTANT BECAUSE WE NEED TO KNOW THE SIZE OF THE CANVAS TO CALCULATE THE SIZE OF THE PLAYER.
         constructor(game) {
@@ -43,7 +42,6 @@ window.addEventListener('load', function () {
             this.frameX = 0; // Refer to Obstacle class for explanation of frameX and frameY.
             this.frameY = 0;
             this.image = document.getElementById('bull');
-
         }
         //passing context allows us to specify which canvas we want to draw on.
         draw(context) {//first you will draw a circle to represent the player.
@@ -66,7 +64,6 @@ window.addEventListener('load', function () {
                 context.lineTo(this.game.mouse.x, this.game.mouse.y); // THIS DRAWS A LINE TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
                 context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
             }
-
         }
         update() {
             this.dx = this.game.mouse.x - this.collisionX; // dx is the distance between the player and the mouse in a straight line across (horizontally). THIS SETS THE HORIZONTAL DISTANCE BETWEEN THE PLAYER (THIS.COLLISIONX) AND THE MOUSE (THIS.GAME.MOUSE.X). THIS ENSURES THAT PLAYER FOLLOWS THE MOUSE MOVEMENTS ALONG THE X AXIS (HORIZONTALLY).
@@ -82,7 +79,6 @@ window.addEventListener('load', function () {
             else if (angle < 1.17) this.frameY = 3;
             else if (angle < 1.96) this.frameY = 4;
             else if (angle < 2.74) this.frameY = 5;// The frameY value determines the position on the sprite sheet. Please refer to the obstacle class for more information on the sprite sheet.  
-
 
             const distance = Math.hypot(this.dy, this.dx); // THIS CALCULATES THE DISTANCE BETWEEN THE PLAYER AND THE MOUSE ALONG THE HYPOTENUS. DY MUST GO FIRST IN THIS BUILT IN METHOD
             if (distance > this.speedModifier) {
@@ -118,7 +114,6 @@ window.addEventListener('load', function () {
             })
         }
     }
-
     class Obstacle {
         constructor(game) {
             this.game = game; //This allows use access the game properties like width and height.
@@ -180,13 +175,11 @@ window.addEventListener('load', function () {
 
                 this.mouse.pressed = true; // When the mouse is down, ofc pressed is true. 
             })
-
             window.addEventListener('mouseup', e => { //if I set this to canvas, the Player will not follow the mouse. This is because the canvas is not the same size as the window, so the mouse position will not be relative to the canvas.
                 this.mouse.x = e.offsetX
                 this.mouse.y = e.offsetY
                 this.mouse.pressed = false;
             })
-
             window.addEventListener('mousemove', e => {
                 //THE BELOW CONDITIONAL STATEMENT ENSURES THAT WHERE WE PRESS, THE PLAYER WILL FOLLOW. BEFORE, WHEREEVER WE MOVED THE MOUSE, THE PLAYER WOULD FOLLOW. NOW YOU HAVE TO PRESS WHERE YOU WANT IT TO GO.
                 if (this.mouse.pressed) {
@@ -204,7 +197,6 @@ window.addEventListener('load', function () {
                 }
             })
         }
-
         render(context) { //this method performs the drawing of the player on the canvas. It takes a context argument, which is the 2D context of the canvas.
             this.obstacles.forEach(obstacle => obstacle.draw(context)); // THIS DRAWS THE OBSTACLES ON THE CANVAS. Originally, I had this underneath the player.draw method, but I moved it here so that the obstacles are drawn first, and then the player is drawn on top of them. This way, the player will always be on top of the obstacles.
             this.player.draw(context);
@@ -256,8 +248,6 @@ window.addEventListener('load', function () {
         //IF WE WANT TO SEE MOVEMENT, WE HAVE TO CALL REDER OVER AND OVER AGAIN. THIS IS DONE BY CALLING THE ANIMATE FUNCTION RECURSIVELY.
         game.render(ctx); // THIS CALLS THE RENDER METHOD OF THE GAME OBJECT, WHICH DRAWS THE PLAYER ON THE CANVAS.
         requestAnimationFrame(animate); // THIS CALLS THE ANIMATE FUNCTION AGAIN. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE ANIMATION CONTINUES TO RUN.
-
     }
     animate(); // THIS CALLS THE ANIMATE FUNCTION FOR THE FIRST TIME. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE ANIMATION STARTS RUNNING.
-
 });
