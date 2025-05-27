@@ -48,22 +48,24 @@ window.addEventListener('load', function () {
         //passing context allows us to specify which canvas we want to draw on.
         draw(context) {//first you will draw a circle to represent the player.
             context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); //Used spriteX and spriteY instead of collision because I want bull image to go over my bubble. 
-            context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
-            context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)//this takes at least 5 arguments: X & Y coordinates, radius, start & end angles (in radians measured from the positive x-axis).
+            if (this.game.debug) { //Please refer to the Game class for more information on the debug mode. AND Object class for more information about this new CS. 
+                context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
+                context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)//this takes at least 5 arguments: X & Y coordinates, radius, start & end angles (in radians measured from the positive x-axis).
 
-            context.save() // THIS SAVES THE CURRENT STATE OF THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN RESTORE THE CANVAS TO ITS ORIGINAL STATE LATER. "THIS SAVES A SNAPSHOT OF THE CANVAS STATE, INCLUDING THE CURRENT TRANSFORM, CLIP, AND STROKE/FILL STYLES."
-            context.globalAlpha = 0.5; // THIS SETS THE GLOBAL ALPHA FOR THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER IS SEMI-TRANSPARENT.
+                context.save() // THIS SAVES THE CURRENT STATE OF THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN RESTORE THE CANVAS TO ITS ORIGINAL STATE LATER. "THIS SAVES A SNAPSHOT OF THE CANVAS STATE, INCLUDING THE CURRENT TRANSFORM, CLIP, AND STROKE/FILL STYLES."
+                context.globalAlpha = 0.5; // THIS SETS THE GLOBAL ALPHA FOR THE CANVAS. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER IS SEMI-TRANSPARENT.
 
-            context.fill(); // THIS FILLS THE PATH WITH THE CURRENT FILL STYLE. BY DEFAULT, THE FILL STYLE IS BLACK.
+                context.fill(); // THIS FILLS THE PATH WITH THE CURRENT FILL STYLE. BY DEFAULT, THE FILL STYLE IS BLACK.
 
-            context.restore(); // THIS RESTORES THE CANVAS TO ITS ORIGINAL STATE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN RESTORE THE CANVAS TO ITS ORIGINAL STATE LATER.
+                context.restore(); // THIS RESTORES THE CANVAS TO ITS ORIGINAL STATE. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN RESTORE THE CANVAS TO ITS ORIGINAL STATE LATER.
 
-            context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
+                context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
 
-            context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
-            context.moveTo(this.collisionX, this.collisionY); // THIS MOVES THE CURRENT POINT TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            context.lineTo(this.game.mouse.x, this.game.mouse.y); // THIS DRAWS A LINE TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
-            context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
+                context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
+                context.moveTo(this.collisionX, this.collisionY); // THIS MOVES THE CURRENT POINT TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+                context.lineTo(this.game.mouse.x, this.game.mouse.y); // THIS DRAWS A LINE TO THE SPECIFIED X AND Y COORDINATES. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
+                context.stroke(); // THIS DRAWS THE PATH WITH THE CURRENT STROKE STYLE. BY DEFAULT, THE STROKE STYLE IS BLACK.
+            }
 
         }
         update() {
