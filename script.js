@@ -20,20 +20,30 @@ window.addEventListener('load', function () {
         //BY PASSING IN THE GAME OBJECT, WE CAN ACCESS THE GAME OBJECT AND ITS PROPERTIES. THIS IS IMPORTANT BECAUSE WE NEED TO KNOW THE SIZE OF THE CANVAS TO CALCULATE THE SIZE OF THE PLAYER.
         constructor(game) {
             this.game = game;
-            //IN GAMING X AND Y CORDINATES ARE USUALLY MEASURED FROM THE TOP LEFT CORNER OF THE CANVAS. THIS MEANS THAT THE X COORDINATE INCREASES AS YOU MOVE TO THE RIGHT AND THE Y COORDINATE INCREASES AS YOU MOVE DOWN. THEY ARE NECESSARY BECAUSE THIS IS THE PLAYERS POSITION ON THE CANVAS.
+            // The following three lines define the players position on the canvas - the bubble. Used collisionX and Y to make it easy to follow.  
             this.collisionX = this.game.width * 0.5; // CollisionX and CollisionY are the player's position. Where the players is located are these variables
-            this.collisionY = this.game.height * 0.5; // // By setting these to 0.5, we ensure that the player starts in the middle of the canvas.
-            this.collisionRadius = 30; // Without the rasdius, the player does not appear on the the canvas. The collision radius defines the size of the player.
+            this.collisionY = this.game.height * 0.5; // By setting these to 0.5, we ensure that the player starts in the middle of the canvas.
+            this.collisionRadius = 30; // Without the radius, the player does not appear on the the canvas. The collision radius defines the size of the player.
 
 
             this.dx = 0; // Horizontal (straight across) distance between the player in the mouse. Given value of 0 as a default. Changed later in the update method.
             this.dy = 0; // Vertical (straight up and down) distance between the player in the mouse. Given value of 0 as a default. Changed later in the update method.
             this.speedModifier = 5; // THIS SETS THE SPEED OF THE PLAYER.
 
+            this.spriteWidth = 255;
+            this.spriteHeight = 255;
+            this.width = this.spriteWidth;
+            this.height = this.spriteHeight;
+
+            //The bottom two lines are the top left corner of the image on the canvas, not the bubble. The collisionX and collisionY are the center point of the player, so we subtract half of the width and height to get the top left corner of the image. You can define these here or in the update method.
+            this.spriteX;
+            this.spriteY;
+            this.image = document.getElementById('bull');
+
         }
         //passing context allows us to specify which canvas we want to draw on.
         draw(context) {//first you will draw a circle to represent the player.
-
+            context.drawImage(this.image, 0, 0, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); //Used spriteX and spriteY instead of collision because I want bull image to go over my bubble. 
             context.beginPath(); // THIS STARTS A NEW PATH. A PATH IS A SERIES OF POINTS THAT DEFINE A SHAPE.
             context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)//this takes at least 5 arguments: X & Y coordinates, radius, start & end angles (in radians measured from the positive x-axis).
 
@@ -75,12 +85,14 @@ window.addEventListener('load', function () {
             this.collisionY += this.speedy * this.speedModifier; // THIS SETS THE Y POSITION OF THE PLAYER. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT THE PLAYER FOLLOWS THE MOUSE.
             // this.collisionX = this.game.mouse.x; // THIS SETS THE X POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
             // this.collisionY = this.game.mouse.y; // THIS SETS THE Y POSITION OF THE PLAYER TO THE MOUSE POSITION. THIS IS IMPORTANT BECAUSE WE WANT THE PLAYER TO FOLLOW THE MOUSE.
+            this.spriteX = this.collisionX - this.width * 0.5; // The value assigned to the this.spriteX is the bubble's x position on the canvas. This moves the player there. collisionX (bubble center) - half the width of the bubble (bubble radius) = top left corner of the bubble on the canvas.
+            this.spriteY = this.collisionY - this.height * 0.5 - 100; //Please refer to the above.
 
             this.game.obstacles.forEach(obstacle => { //forEah allows us to check out player and obstacles spatial relationship to each other.
                 let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, obstacle); // This is saying: Create 5 variables and pairs them with the values that sit at the specific indices in the array returned by checkCollision method.  
-                if (collision){
-                    const unit_x = dx/distance; // This is a vector, small line between 0 and 1px, that points in the direction the player will be pushed. This ensures that the player is pushed away from the obstacle in the direction of the obstacle. This will always be a value between 0 and 1, so it will not push the player too far away from the obstacle.
-                    const unit_y = dy/distance; // Please refer to the above. 
+                if (collision) {
+                    const unit_x = dx / distance; // This is a vector, small line between 0 and 1px, that points in the direction the player will be pushed. This ensures that the player is pushed away from the obstacle in the direction of the obstacle. This will always be a value between 0 and 1, so it will not push the player too far away from the obstacle.
+                    const unit_y = dy / distance; // Please refer to the above. 
 
                     this.collisionX = obstacle.collisionX + (sumOfRadii + 1) * unit_x; //This pushes it outside of the obstacle's radius/center point (bubble). obstacle.collisionX is the center point of the obstacle, so we add the sum of the radii to it to push the player outside of the obstacle's radius. The +1 is to ensure that the player is not touching the obstacle. * unit_x gives it the correct direction to push the player away. 
                     this.collisionY = obstacle.collisionY + (sumOfRadii + 1) * unit_y; //Please refer to the above.
