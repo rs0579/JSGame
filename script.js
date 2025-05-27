@@ -140,13 +140,16 @@ window.addEventListener('load', function () {
 
             context.drawImage(this.image, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.spriteX, this.spriteY, this.width, this.height); // This is a built-in method that draws the image on the canvas. If I want to excise an individual image from the sprite sheest, I have to use the maximum number of arguments the drawImage method can take. The first four arguments are: 1) the IMAGE, 2 - 3) the X and Y COORDINATES of the top left corner of the image, and the 4- 5) WIDTH and HEIGHT of the image and they all are the excised image. The last four arguments are the 6 - 7) X and Y COORDINATES of where to draw the image on the canvas, and the 8 - 9) WIDTH and HEIGHT of the image on the canvas.
             // The above: When you multiply argument 2 by the spriteWidth, you are specifying which image in the sprite sheet you want to draw moving across. In this case, it is the second image in the sprite sheet (index 1). If you want to draw a different image, you can change the number before the * to the index of the image you want to draw. And the same for the 3rd argument, which when multiplied by the spriteHeight, specifies which row of images you want to draw (up and down). In this case, it is the first row (index 0). If you want to draw a different row, you can change the number before the * to the index of the row you want to draw.
-            context.beginPath();
-            context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)
-            context.save();
-            context.globalAlpha = 0.5;
-            context.fill();
-            context.restore();
-            context.stroke();
+
+            if (this.game.debug) { // I moved the obstacle bubble to the conditional statement because I do not want the user to see it unless it is in debug mode.
+                context.beginPath();
+                context.arc(this.collisionX, this.collisionY, this.collisionRadius, 0, Math.PI * 2)
+                context.save();
+                context.globalAlpha = 0.5;
+                context.fill();
+                context.restore();
+                context.stroke();
+            }
         }
     }
     class Game {
@@ -195,7 +198,7 @@ window.addEventListener('load', function () {
             window.addEventListener('keydown', e => { //if I set this to canvas, the Player will not follow the mouse. This is because the canvas is not the same size as the window, so the mouse position will not be relative to the canvas.
                 if (e.key === 'd') {
                     this.debug = !this.debug; // THIS TOGGLE THE DEBUG MODE ON AND OFF. THIS IS IMPORTANT BECAUSE WE WANT TO MAKE SURE THAT WE CAN SEE THE COLLISION BUBBLES AND OTHER DEBUG INFORMATION.
-                console.log(this.debug);
+                    console.log(this.debug);
                 }
             })
         }
